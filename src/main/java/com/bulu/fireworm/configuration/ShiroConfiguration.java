@@ -15,8 +15,10 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * shiro配置
@@ -39,7 +41,7 @@ public class ShiroConfiguration {
      * 注入身份认证realm
      */
     @Bean
-    @DependsOn("hashMatcher")
+    @DependsOn({"hashMatcher","rememberMeManager"})
     public ShiroRealm shiroRealm(){
         ShiroRealm shiroRealm = new ShiroRealm();//ShiroRealm是自己创建的Realm
         shiroRealm.setCredentialsMatcher(hashMatcher());//设置哈希密码比较器
@@ -66,13 +68,44 @@ public class ShiroConfiguration {
      */
     @Bean
     @DependsOn("rememberMeCookie")
-    public CookieRememberMeManager rememberMeManager(){
+    public CookieRememberMeManager rememberMeManager() {
         CookieRememberMeManager rememberMeManager = new CookieRememberMeManager();
         //rememberme cookie加密的密钥 建议每个项目都不一样 默认AES算法 密钥长度（128 256 512 位），通过以下代码可以获取
         //KeyGenerator keygen = KeyGenerator.getInstance("AES");
         //SecretKey deskey = keygen.generateKey();
         //System.out.println(Base64.encodeToString(deskey.getEncoded()));
-        byte[] cipherKey = Base64.decode("wGiHplamyXlVB11UXWol8g==");
+        int num;
+        StringBuilder key = new StringBuilder();
+        String base64key = "";
+        byte[] cipherKey;
+        char[] a = new char[]{'a','s','d','f','g','h','j','k','l','q','w','e','r','t','y'
+                ,'u','i','o','p','z','x','c','v','b','n','m'};
+        int i = 0;
+       while (true){
+           num = new Random().nextInt(999999999);
+           // key = String.valueOf(num) + a[i] + "sky" + String.valueOf(num) + key;
+           //采用StringBuilder来拼接字符串，相对于+，其速度快，且不浪费资源
+           key.append(num).append(a[i]).append("sky").append(num);
+
+           Base64 base64 = new Base64();
+           try{
+                base64key = base64.encodeToString(key.toString().getBytes("UTF-8"));
+           }catch (UnsupportedEncodingException e){
+               e.printStackTrace();
+           }
+           cipherKey = base64key.getBytes();
+           int length = cipherKey.length;
+           if (length == 64){
+               System.out.println("秘钥字符串".concat(key.toString()));
+               System.out.println("秘钥base64".concat(base64key) );
+               System.out.println("秘钥byte[]".concat(cipherKey.toString()));
+               break;
+           }
+           if (length > 64)key.setLength(0);
+           i = (i == 25)? 0 : i;
+           i++;
+       }
+        //byte[] cipherKey = Base64.decode("MTIzNDQ=");
         rememberMeManager.setCipherKey(cipherKey);
         rememberMeManager.setCookie(rememberMeCookie());
         return rememberMeManager;
@@ -95,7 +128,7 @@ public class ShiroConfiguration {
     * 过滤器(shiroFilter)
     */
     @Bean
-    @DependsOn("securityManager")
+    @DependsOn({"securityManager","rememberMeManager"})
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager){
        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);//设置安全管理器
@@ -117,7 +150,7 @@ public class ShiroConfiguration {
      * 使用代理方式;所以需要开启代码支持;否则@RequiresRoles等注解无法生效
      */
     @Bean
-    @DependsOn("securityManager")
+    @DependsOn({"securityManager","rememberMeManager"})
     public AuthorizationAttributeSourceAdvisor attributeSourceAdvisor(SecurityManager securityManager){
         AuthorizationAttributeSourceAdvisor attributeSourceAdvisor =
                 new AuthorizationAttributeSourceAdvisor();
@@ -129,6 +162,7 @@ public class ShiroConfiguration {
      * Shiro生命周期处理器
      */
     @Bean
+    @DependsOn("rememberMeManager")
     public LifecycleBeanPostProcessor lifecycleBeanPostProcessor(){
         return new LifecycleBeanPostProcessor();
     }
@@ -137,7 +171,7 @@ public class ShiroConfiguration {
      * 自动创建代理 不然AOP注解不会生效
      */
     @Bean
-    @DependsOn("lifecycleBeanPostProcessor")
+    @DependsOn({"lifecycleBeanPostProcessor","rememberMeManager"})
     public DefaultAdvisorAutoProxyCreator autoProxyCreator(){
         DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
         advisorAutoProxyCreator.setProxyTargetClass(true);

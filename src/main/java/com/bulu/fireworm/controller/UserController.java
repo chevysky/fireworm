@@ -6,7 +6,6 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.Map;
 
 @RestController
@@ -22,6 +21,8 @@ public class UserController {
         String username = (String)map.get("username");
         String password = (String)map.get("password");
         UsernamePasswordToken token = new UsernamePasswordToken(username,password);
+        boolean remember = (boolean)map.get("remember");
+        token.setRememberMe(remember);
         try {
             subject.login(token);
             return "登录成功";
@@ -34,5 +35,6 @@ public class UserController {
         }catch (DisabledAccountException e){
             return "该账户被禁用";
         }
+
     }
 }
