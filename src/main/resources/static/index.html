@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>BULU微功能测试平台</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="main.js"></script>
 </head>
 <body>
     <div class="container">
@@ -13,22 +15,27 @@
         </div>
         <div class="row">
             <div class="col-md-6" style="border: #007bff solid 3px;">
-                <div style="height: 50px;"></div>
+                <div style="height: 50px;">
+                    当前用户：<span id = "user"></span>
+                </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">@</span>
                     </div>
-                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                    <input id="username" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon2">#</span>
                     </div>
-                    <input type="text" class="form-control" placeholder="Password" aria-label="Username" aria-describedby="basic-addon2">
+                    <input type="password" id="password" class="form-control" placeholder="Password" aria-describedby="passwordHelpBlock">
                 </div>
                 <div style="width: 400px;text-align: right">
-                    <button type="button" class="btn btn-secondary">注册</button>
-                    <button type="button" class="btn btn-warning">登录</button>
+                    <button type="button" class="btn btn-secondary" onclick="userRegister()">注册</button>
+                    <button type="button" class="btn btn-warning" onclick="userLogin()">登录</button>
+                    <br>
+                    <input type="checkbox" id="remember" aria-label="Radio button for following text input">
+                    <span>记住账号和密码</span>
                 </div>
                 <div style="height: 50px;"></div>
             </div>

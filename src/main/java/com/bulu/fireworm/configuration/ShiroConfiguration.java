@@ -13,12 +13,8 @@ import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
-
-import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * shiro配置
@@ -41,10 +37,9 @@ public class ShiroConfiguration {
      * 注入身份认证realm
      */
     @Bean
-    @DependsOn({"hashMatcher","rememberMeManager"})
     public ShiroRealm shiroRealm(){
         ShiroRealm shiroRealm = new ShiroRealm();//ShiroRealm是自己创建的Realm
-        shiroRealm.setCredentialsMatcher(hashMatcher());//设置哈希密码比较器
+        shiroRealm.setCredentialsMatcher(hashMatcher());
         return shiroRealm;
     }
 
@@ -67,47 +62,10 @@ public class ShiroConfiguration {
      * cookie管理器;
      */
     @Bean
-    @DependsOn("rememberMeCookie")
     public CookieRememberMeManager rememberMeManager() {
         CookieRememberMeManager rememberMeManager = new CookieRememberMeManager();
-        //rememberme cookie加密的密钥 建议每个项目都不一样 默认AES算法 密钥长度（128 256 512 位），通过以下代码可以获取
-        //KeyGenerator keygen = KeyGenerator.getInstance("AES");
-        //SecretKey deskey = keygen.generateKey();
-        //System.out.println(Base64.encodeToString(deskey.getEncoded()));
-        int num;
-        StringBuilder key = new StringBuilder();
-        String base64key = "";
-        byte[] cipherKey;
-        char[] a = new char[]{'a','s','d','f','g','h','j','k','l','q','w','e','r','t','y'
-                ,'u','i','o','p','z','x','c','v','b','n','m'};
-        int i = 0;
-       while (true){
-           num = new Random().nextInt(999999999);
-           // key = String.valueOf(num) + a[i] + "sky" + String.valueOf(num) + key;
-           //采用StringBuilder来拼接字符串，相对于+，其速度快，且不浪费资源
-           key.append(num).append(a[i]).append("sky").append(num);
-
-           Base64 base64 = new Base64();
-           try{
-                base64key = base64.encodeToString(key.toString().getBytes("UTF-8"));
-           }catch (UnsupportedEncodingException e){
-               e.printStackTrace();
-           }
-           cipherKey = base64key.getBytes();
-           int length = cipherKey.length;
-           if (length == 64){
-               System.out.println("秘钥字符串".concat(key.toString()));
-               System.out.println("秘钥base64".concat(base64key) );
-               System.out.println("秘钥byte[]".concat(cipherKey.toString()));
-               break;
-           }
-           if (length > 64)key.setLength(0);
-           i = (i == 25)? 0 : i;
-           i++;
-       }
-        //byte[] cipherKey = Base64.decode("MTIzNDQ=");
-        rememberMeManager.setCipherKey(cipherKey);
         rememberMeManager.setCookie(rememberMeCookie());
+        rememberMeManager.setCipherKey(Base64.decode("3AvVhmFLUs0KTA3Kprsdag=="));
         return rememberMeManager;
     }
 
@@ -116,11 +74,9 @@ public class ShiroConfiguration {
      * 注：package org.apache.shiro.mgt.SecurityManager
      */
     @Bean
-    @DependsOn({"shiroRealm","rememberMeManager"})
     public SecurityManager securityManager(){
         DefaultWebSecurityManager webSecurityManager = new DefaultWebSecurityManager();
         webSecurityManager.setRealm(shiroRealm());//配置自定义的realm
-        webSecurityManager.setRememberMeManager(rememberMeManager());
         return webSecurityManager;
     }
 
@@ -128,7 +84,6 @@ public class ShiroConfiguration {
     * 过滤器(shiroFilter)
     */
     @Bean
-    @DependsOn({"securityManager","rememberMeManager"})
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager){
        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);//设置安全管理器
@@ -139,7 +94,7 @@ public class ShiroConfiguration {
 
         Map<String,String> filterChainDefinitionMap=new LinkedHashMap<>();
         filterChainDefinitionMap.put("/static/**", "anon"); // 配置不会被拦截的链接 顺序判断 这里是放出静态资源
-        //filterChainDefinitionMap.put("/**", "authc");// /设置拦截的接口
+        filterChainDefinitionMap.put("/fireworm/**","anon");//.put("/**", "authc");设置拦截的接口
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
@@ -150,7 +105,6 @@ public class ShiroConfiguration {
      * 使用代理方式;所以需要开启代码支持;否则@RequiresRoles等注解无法生效
      */
     @Bean
-    @DependsOn({"securityManager","rememberMeManager"})
     public AuthorizationAttributeSourceAdvisor attributeSourceAdvisor(SecurityManager securityManager){
         AuthorizationAttributeSourceAdvisor attributeSourceAdvisor =
                 new AuthorizationAttributeSourceAdvisor();
@@ -162,7 +116,6 @@ public class ShiroConfiguration {
      * Shiro生命周期处理器
      */
     @Bean
-    @DependsOn("rememberMeManager")
     public LifecycleBeanPostProcessor lifecycleBeanPostProcessor(){
         return new LifecycleBeanPostProcessor();
     }
@@ -171,7 +124,6 @@ public class ShiroConfiguration {
      * 自动创建代理 不然AOP注解不会生效
      */
     @Bean
-    @DependsOn({"lifecycleBeanPostProcessor","rememberMeManager"})
     public DefaultAdvisorAutoProxyCreator autoProxyCreator(){
         DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
         advisorAutoProxyCreator.setProxyTargetClass(true);

@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bulu.fireworm.mapper.UserDao">
+
+    <!--通过username获取用户-->
     <select id="selectUserByUsername" parameterType="String" resultType="com.bulu.fireworm.entity.UserEntity">
         select * from user where username = #{arg0}
+    </select>
+
+    <!--获取所有用户-->
+    <select id="selectAllUser" resultType="com.bulu.fireworm.entity.UserEntity">
+        select * from user
     </select>
 </mapper>
