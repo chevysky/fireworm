@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Transactional
+import static org.springframework.transaction.annotation.Propagation.REQUIRED;
+
+@Transactional(propagation = REQUIRED)
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -33,5 +36,14 @@ public class UserServiceImpl implements UserService {
     public String getLoginUser() throws Exception {
         String username = (String)SecurityUtils.getSubject().getPrincipal();
         return username;
+    }
+
+    /**
+     *  NIO图片处理
+     * @param file
+     */
+    @Override
+    public void disposeImgByNio(MultipartFile file) throws Exception {
+
     }
 }

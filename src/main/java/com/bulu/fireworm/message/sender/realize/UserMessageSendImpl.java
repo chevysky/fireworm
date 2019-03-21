@@ -21,18 +21,18 @@ public class UserMessageSendImpl implements UserMessageSend {
      */
     @Override
     public void sendUserInfo(UserEntity user) throws Exception {
-          //sendDirectMsg("hello","交换机模式：direct，队列名：hello");
-//          sendExchangeMsg("topic","org.cord.hello","交换机模式：topic，队列名：hello");
-//          sendExchangeMsg("topic","org.cord.a","交换机模式：topic，aaaa");
-//          sendExchangeMsg("topic","org.cord.b","交换机模式：topic，bbbbb");
-//          user.setId(1);
-//          user.setNickname("chevysky");
-//          user.setWechat("lalala");
-//          sendExchangeMsg("topic","org.cord.user",user);
+          sendDirectMsg("hello","交换机模式：direct，队列名：hello");
+          sendExchangeMsg("topic","org.cord.hello","交换机模式：topic，队列名：hello");
+          sendExchangeMsg("topic","org.cord.a","交换机模式：topic，aaaa");
+          sendExchangeMsg("topic","org.cord.b","交换机模式：topic，bbbbb");
+          user.setId(1);
+          user.setNickname("chevysky");
+          user.setWechat("lalala");
+          sendExchangeMsg("topic","org.cord.user",user);
            sendExchangeMsg(RabbitmqConfiguration.fanoutExchange,"hello","交换机模式：fanout，队列名：queue");
-//          Map map = new HashMap();
-//          map.put("First","A");
-//          sendHeadersMsg("headers","headers发送消息",map);
+          Map map = new HashMap();
+          map.put("First","A");
+          sendHeadersMsg("headers","headers发送消息",map);
     }
 
     /**

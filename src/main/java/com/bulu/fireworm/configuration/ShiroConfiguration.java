@@ -77,6 +77,7 @@ public class ShiroConfiguration {
     public SecurityManager securityManager(){
         DefaultWebSecurityManager webSecurityManager = new DefaultWebSecurityManager();
         webSecurityManager.setRealm(shiroRealm());//配置自定义的realm
+        webSecurityManager.setRememberMeManager(rememberMeManager());
         return webSecurityManager;
     }
 

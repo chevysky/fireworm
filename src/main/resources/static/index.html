@@ -39,7 +39,20 @@
                 </div>
                 <div style="height: 50px;"></div>
             </div>
-            <div class="col-md-6" style="border: #007bff solid 3px;border-left-width: 0px;"></div>
+            <div class="col-md-6" style="border: #007bff solid 3px;border-left-width: 0px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <br>
+                        <div style="border: solid 2px #bee5eb;height: 150px;width: 100px;background: url('./file.png') no-repeat center;">
+                            <input type="file" id="file" style="height: 100%;width: 100%;opacity: 0;cursor: pointer" onchange="showImg()">
+                            <button class="btn-primary" onclick="getFile()">确认上传</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="" id="img" width="100%">
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6" style="border: #007bff solid;border-width: 0px 3px 3px 3px;height: 260px;"></div>

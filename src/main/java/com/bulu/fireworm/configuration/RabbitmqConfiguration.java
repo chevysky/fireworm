@@ -57,10 +57,15 @@ public class RabbitmqConfiguration {
         return new FanoutExchange(fanoutExchange);
     }
 
-    //将队列与fanout交换机进行绑定
+    //将队列fanoutQueue与fanout交换机进行绑定
     @Bean
-    Binding fanoutBinding(Queue fanoutQueue,Queue queue, FanoutExchange fanoutExchange) {
+    Binding fanoutBinding(Queue fanoutQueue, FanoutExchange fanoutExchange) {
         return BindingBuilder.bind(fanoutQueue).to(fanoutExchange);
+    }
+    //将队列queue与fanout交换机进行绑定
+    @Bean
+    Binding fanoutBind(Queue queue,FanoutExchange fanoutExchange){
+        return BindingBuilder.bind(queue).to(fanoutExchange);
     }
 
     //声明Headers交换机
